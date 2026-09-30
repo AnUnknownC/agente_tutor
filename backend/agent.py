@@ -67,7 +67,7 @@ def get_agent_response(messages: list, student_id: str) -> dict:
 
     response = client.chat.completions.create(
         model=MODEL,
-        max_tokens=2000,
+        max_tokens=1000,
         messages=[{"role": "system", "content": SYSTEM_PROMPT}] + messages
     )
 
