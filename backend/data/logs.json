@@ -1,0 +1,42 @@
+[
+  {
+    "timestamp": "2026-09-29T11:00:56.886783",
+    "student_id": "EST001",
+    "problem_id": "P001",
+    "student_message": "Simplemente haría una suma: 1500 + 200 = 1700 y listo, no necesito guardar nada",
+    "agent_response": "La respuesta del estudiante es: EC\n\nPorque, aunque entiendo el procedimiento para calcular el nuevo precio, no identifica la necesidad de almacenar el precio original y actualizarlo de manera independiente.\n\n¿Qué te parece si intentamos resolverlo paso a paso?",
+    "clasificacion": "DESCONOCIDA",
+    "nivel_bloom": "desconocido",
+    "nivel_intervencion": 0
+  },
+  {
+    "timestamp": "2026-09-29T11:01:54.521782",
+    "student_id": "EST001",
+    "problem_id": "P001",
+    "student_message": "Ah entiendo, necesito una variable que guarde 1500 primero y luego le sumo 200 para obtener el nuevo precio",
+    "agent_response": "Parcial\n\nPorque identificaste la necesidad de una variable para almacenar el valor inicial, pero no consideraste la importancia de la variable para manipular el valor y obtener el nuevo resultado.\n\n¿Qué tal si intentamos implementar esa variable para calcular el nuevo precio?",
+    "clasificacion": "DESCONOCIDA",
+    "nivel_bloom": "desconocido",
+    "nivel_intervencion": 0
+  },
+  {
+    "timestamp": "2026-09-29T11:20:52.744966",
+    "student_id": "EST001",
+    "problem_id": "P001",
+    "student_message": "\"Necesito crear una variable llamada precio con valor 1500, y luego crear otra variable precio_nuevo que sea precio más 200, así guardo ambos valores por separado",
+    "agent_response": "Valide la respuesta:\n\n\"Tu respuesta demuestra comprensión del concepto. Has identificado la necesidad de una variable para guardar el precio y has sugerido una forma de asignar el valor inicial. Sin embargo, has utilizado dos variables para representar el precio, lo que podría generar confusión. Por ejemplo, si necesitas calcular el precio total, ¿qué letra tendría la 'N' en el precio?\"\n\nClasificación: CORRECTA\n\nNivel de intervención: NIVEL 2",
+    "clasificacion": "DESCONOCIDA",
+    "nivel_bloom": "desconocido",
+    "nivel_intervencion": 0
+  },
+  {
+    "timestamp": "2026-09-29T12:32:25.021365",
+    "student_id": "EST001",
+    "problem_id": "P001",
+    "student_message": "hola",
+    "agent_response": "EC: Explica concepto + Nivel 1.\n\"Hola, entiendo que necesitas guardar el precio de un producto. Para hacer eso, necesitas una variable en tu programa que pueda almacenar ese valor. ¿Qué tipo de variable crees que necesitarías para guardar el precio?\"",
+    "clasificacion": "DESCONOCIDA",
+    "nivel_bloom": "desconocido",
+    "nivel_intervencion": 0
+  }
+]

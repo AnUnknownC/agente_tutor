@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente Tutor — Prueba de Concepto</title>
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+
+<header>
+    <h1>🎓 Agente Tutor — Prueba de Concepto</h1>
+    <span>Motor de Decisión Pedagógica · Bloom + Carga Cognitiva + SDLC</span>
+</header>
+
+<div class="main-container">
+
+    <!-- Panel izquierdo -->
+    <div class="problem-panel">
+        <div class="student-input">
+            <label>ID del Estudiante</label>
+            <input type="text" id="studentId" placeholder="Ej: EST001" value="EST001">
+        </div>
+
+        <div class="problem-selector" style="margin-top: 16px;">
+            <label>Selecciona un Problema</label>
+            <select id="problemSelect" onchange="loadProblem()">
+                <option value="">— Selecciona —</option>
+            </select>
+        </div>
+
+        <div id="problemCard" class="problem-card" style="display:none;">
+            <h3 id="problemTitle"></h3>
+            <p id="problemText"></p>
+            <div class="problem-meta">
+                <span class="badge badge-bloom" id="problemBloom"></span>
+                <span class="badge badge-sdlc" id="problemSdlc"></span>
+                <span class="badge badge-concept" id="problemConcept"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de chat -->
+    <div class="chat-panel">
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                <h2>Bienvenido al Agente Tutor</h2>
+                <p>Selecciona un problema en el panel izquierdo<br>y escribe tu respuesta para comenzar.</p>
+            </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            El agente está analizando tu respuesta...
+        </div>
+
+        <div class="chat-input-area">
+            <textarea
+                id="messageInput"
+                placeholder="Escribe tu respuesta aquí..."
+                rows="1"
+                onkeydown="handleKeyDown(event)"
+            ></textarea>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
+                Enviar
+            </button>
+        </div>
+    </div>
+
+    <!-- Panel de perfil -->
+    <div class="profile-panel">
+        <h3>Perfil del Estudiante</h3>
+
+        <div class="profile-stat">
+            <label>Interacciones</label>
+            <span id="statTotal">0</span>
+        </div>
+        <div class="profile-stat">
+            <label>Errores conceptuales</label>
+            <span id="statEC">0</span>
+        </div>
+        <div class="profile-stat">
+            <label>Errores procedimentales</label>
+            <span id="statEP">0</span>
+        </div>
+        <div class="profile-stat">
+            <label>Respuestas correctas</label>
+            <span id="statCorrectas">0</span>
+        </div>
+        <div class="profile-stat">
+            <label>Nivel intervención prom.</label>
+            <span id="statNivel"><small>—</small></span>
+        </div>
+    </div>
+</div>
+<script type="module" src="/static/index.js"></script>
+</body>
+</html>

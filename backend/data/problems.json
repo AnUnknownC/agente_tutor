@@ -1,0 +1,54 @@
+[
+  {
+    "id": "P001",
+    "titulo": "Variables y almacenamiento",
+    "enunciado": "Tienes una tienda y necesitas guardar el precio de un producto que cuesta 1500 pesos. Después el precio sube 200 pesos. ¿Cómo guardarías el precio inicial y cómo actualizarías el precio nuevo?",
+    "concepto": "variables",
+    "nivel_bloom": "comprension",
+    "fase_sdlc": "analisis",
+    "criterio_correcto": "El estudiante identifica que necesita una variable para guardar el precio, asigna el valor inicial y luego actualiza sumando 200",
+    "pista_nivel1": "¿Qué información necesitas guardar para poder usarla después?",
+    "pista_nivel2": "Piensa en dos pasos: primero guardar el precio inicial, luego calcular el precio nuevo",
+    "analogia": "Es como una caja donde guardas un número. Primero pones 1500 en la caja. Luego abres la caja, le sumas 200 y guardas el resultado de nuevo.",
+    "pseudocodigo_parcial": "precio = 1500 \nnuevo_precio = precio + ..."
+  },
+  {
+    "id": "P002",
+    "titulo": "Condicionales básicos",
+    "enunciado": "Una tienda da descuento del 10% si el cliente compra más de 50000 pesos. Si compra menos, paga el precio normal. ¿Cómo decides si el cliente recibe descuento o no?",
+    "concepto": "condicionales",
+    "nivel_bloom": "aplicacion",
+    "fase_sdlc": "diseno",
+    "criterio_correcto": "El estudiante identifica la condición de comparación, el caso verdadero con descuento y el caso falso sin descuento",
+    "pista_nivel1": "¿Cuál es la pregunta que debes hacerle al monto de la compra?",
+    "pista_nivel2": "Hay dos caminos posibles: uno si la compra supera 50000 y otro si no. ¿Qué pasa en cada camino?",
+    "analogia": "Es como una puerta con dos salidas. Antes de pasar, preguntas: ¿compraste más de 50000? Si sí, tomas la salida del descuento. Si no, tomas la salida del precio normal.",
+    "pseudocodigo_parcial": "si compra > 50000:\n    precio_final = compra - ...\nsi no:\n    precio_final = ..."
+  },
+  {
+    "id": "P003",
+    "titulo": "Ciclos básicos",
+    "enunciado": "Tienes una lista de 5 productos con sus precios. Necesitas calcular el precio total de todos los productos. ¿Cómo sumarías todos los precios sin escribir la suma uno por uno?",
+    "concepto": "ciclos",
+    "nivel_bloom": "aplicacion",
+    "fase_sdlc": "implementacion",
+    "criterio_correcto": "El estudiante identifica que necesita un acumulador, un ciclo que recorra los productos y que sume cada precio al acumulador",
+    "pista_nivel1": "¿Qué necesitas guardar mientras vas sumando cada precio?",
+    "pista_nivel2": "Piensa en tres cosas: un lugar donde guardar la suma parcial, una forma de revisar cada producto uno por uno, y cómo agregar cada precio a la suma",
+    "analogia": "Es como contar dinero moneda por moneda. Empiezas con 0 en la mano. Tomas la primera moneda y la sumas. Luego la segunda. Así hasta terminar todas.",
+    "pseudocodigo_parcial": "total = 0\npara cada precio en lista_precios:\n    total = total + ..."
+  },
+  {
+    "id": "P004",
+    "titulo": "Análisis de condiciones múltiples",
+    "enunciado": "Un sistema de calificaciones clasifica a los estudiantes así: 90 o más es Excelente, entre 70 y 89 es Bueno, entre 50 y 69 es Regular, menos de 50 es Insuficiente. ¿Cómo determinas la categoría de un estudiante dado su puntaje?",
+    "concepto": "condicionales anidados",
+    "nivel_bloom": "analisis",
+    "fase_sdlc": "diseno",
+    "criterio_correcto": "El estudiante identifica los cuatro rangos, el orden correcto de evaluación y que las condiciones deben ser mutuamente excluyentes",
+    "pista_nivel1": "¿Cuántas categorías posibles hay y cuál es la condición que define cada una?",
+    "pista_nivel2": "Piensa en evaluar las condiciones de mayor a menor. ¿Por cuál rango conviene empezar y por qué?",
+    "analogia": "Es como un filtro de coladores apilados. El primero deja pasar solo lo mayor a 90. El segundo, lo que quedó entre 70 y 89. Así sucesivamente.",
+    "pseudocodigo_parcial": "si puntaje >= 90:\n    categoria = 'Excelente'\nsi no, si puntaje >= 70:\n    categoria = ...\nsi no, si puntaje >= ...:\n    categoria = 'Regular'\nsi no:\n    categoria = ..."
+  }
+]
