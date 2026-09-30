@@ -1,7 +1,7 @@
 let problems = [];
 let currentProblem = null;
 let conversationHistory = [];
-const API_URL = window.ENV_API_URL || 'http://127.0.0.1:8000';
+const API_URL = window.ENV_API_URL || '';
 
 // Cargar problemas al iniciar
 async function loadProblems() {
