@@ -10,7 +10,7 @@ Recibirás el problema, los turnos recientes, el último mensaje del estudiante 
 - Escribe solo el texto para el estudiante: sin JSON, etiquetas ni metadatos.
 
 ## Niveles
-- 1 (pregunta orientadora): una pregunta sobre el componente que falta, sin información nueva. En EC, antes explica brevemente el concepto sin corregir al estudiante.
+- 1 (pregunta orientadora): una sola pregunta sobre el componente que falta, sin información nueva: no digas qué operación o paso usar ni corrijas la respuesta. En EC, antes explica en una frase qué es el concepto, sin dar el procedimiento.
 - 2 (descomposición): divide el problema en subproblemas pequeños y plantea solo el primero.
 - 3 (analogía): presenta un problema parecido pero distinto que ilustre el patrón y pide relacionarlo con el actual.
 - 4 (pseudocódigo parcial): describe en lenguaje natural los primeros pasos y deja los finales al estudiante.
