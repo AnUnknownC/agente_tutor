@@ -1,7 +1,7 @@
 """Arma el contexto común (problema, turnos recientes, último mensaje) que
 consumen el clasificador y el redactor."""
 
-MAX_MENSAJES_PREVIOS = 8   # equivale a 4 turnos (estudiante + tutor)
+MAX_MENSAJES_PREVIOS = 4   # equivale a 2 turnos (estudiante + tutor)
 MAX_CARACTERES = 800       # por mensaje, para acotar el consumo de tokens
 ETIQUETA_INICIO = "<mensaje_estudiante>"
 ETIQUETA_FIN = "</mensaje_estudiante>"
@@ -18,15 +18,19 @@ def validar_mensajes(mensajes: list[dict]) -> None:
         raise ContextoError("El último mensaje debe ser del estudiante y no estar vacío")
 
 
-def construir_contexto(problema: dict, mensajes: list[dict]) -> str:
+def construir_contexto(problema: dict, mensajes: list[dict], *, incluir_criterio: bool = True) -> str:
+    """`incluir_criterio=False` para el redactor: no necesita el criterio y así no puede filtrarlo."""
     validar_mensajes(mensajes)
+    criterio = (
+        f"Criterio de respuesta correcta: {problema['criterio_correcto']}\n" if incluir_criterio else ""
+    )
     return (
         "## PROBLEMA\n"
         f"Título: {problema['titulo']}\n"
         f"Enunciado: {problema['enunciado']}\n"
         f"Concepto: {problema['concepto']}\n"
         f"Nivel Bloom objetivo: {problema['nivel_bloom']}\n"
-        f"Criterio de respuesta correcta: {problema['criterio_correcto']}\n\n"
+        f"{criterio}\n"
         "## TURNOS RECIENTES\n"
         f"{_turnos_previos(mensajes)}\n\n"
         "## ÚLTIMO MENSAJE DEL ESTUDIANTE\n"

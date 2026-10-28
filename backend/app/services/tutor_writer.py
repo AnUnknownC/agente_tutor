@@ -3,7 +3,9 @@
 No decide nada. Después de generar, revisa que el texto no contenga código y,
 si lo contiene, regenera una vez; si persiste, usa un mensaje de respaldo.
 """
+import logging
 import re
+import unicodedata
 from dataclasses import dataclass
 
 from app.domain.decision import Decision
@@ -12,7 +14,9 @@ from app.llm.client import completar
 from app.prompts import cargar_prompt
 from app.services.context_builder import construir_contexto
 
-TEMPERATURA = 0.4
+logger = logging.getLogger(__name__)
+
+TEMPERATURA = 0.2
 
 # Ayuda autorizada (material del profesor en problems.json) según el nivel.
 AYUDAS_POR_NIVEL = {1: "pista_nivel1", 2: "pista_nivel2", 3: "analogia", 4: "pseudocodigo_parcial"}
@@ -68,7 +72,7 @@ def construir_mensajes(problema: dict, mensajes: list[dict], clasificacion: Clas
         instruccion += f"\nAyuda autorizada para este nivel (material del profesor):\n<ayuda>\n{ayuda}\n</ayuda>"
     return [
         {"role": "system", "content": cargar_prompt("writer")},
-        {"role": "user", "content": construir_contexto(problema, mensajes) + instruccion},
+        {"role": "user", "content": construir_contexto(problema, mensajes, incluir_criterio=False) + instruccion},
     ]
 
 
@@ -78,6 +82,26 @@ def _ayuda_autorizada(problema: dict, decision: Decision) -> str | None:
     clave = AYUDAS_POR_NIVEL.get(decision.nivel_intervencion)
     ayuda = problema.get(clave) if clave else None
     return ayuda.strip() if isinstance(ayuda, str) and ayuda.strip() else None
+
+
+def _es_raro(c: str) -> bool:
+    """Espacio Unicode distinto del normal, o carácter invisible/de control (salvo saltos de línea y tabulador)."""
+    if c in "\n\t ":
+        return False
+    return unicodedata.category(c) in {"Zs", "Zl", "Zp", "Cf", "Cc"} or c in "\u034f\u2800\u3164"
+
+
+def normalizar_texto(texto: str) -> str:
+    """Convierte espacios Unicode y caracteres invisibles en espacios normales.
+
+    Registra en el log los códigos encontrados para poder diagnosticar el origen.
+    """
+    raros = {c for c in texto if _es_raro(c)}
+    if raros:
+        logger.warning("Caracteres raros en la respuesta del modelo: %s",
+                       ", ".join(f"U+{ord(c):04X}" for c in sorted(raros)))
+        texto = "".join(" " if c in raros else c for c in texto)
+    return re.sub(r"[ \t]{2,}", " ", texto).strip()
 
 
 def redactar(problema: dict, mensajes: list[dict], clasificacion: Clasificacion, decision: Decision,
@@ -96,4 +120,6 @@ def redactar(problema: dict, mensajes: list[dict], clasificacion: Clasificacion,
 
 
 def _generar(entrada, on_uso, cliente, ajustes) -> str:
-    return completar(entrada, temperature=TEMPERATURA, on_uso=on_uso, cliente=cliente, ajustes=ajustes)
+    return normalizar_texto(
+        completar(entrada, temperature=TEMPERATURA, on_uso=on_uso, cliente=cliente, ajustes=ajustes)
+    )

@@ -34,9 +34,14 @@ class Resultado:
     justificacion: str
 
 
-def clasificar(problema: dict, mensajes: list[dict], *, on_uso=None, cliente=None, ajustes=None) -> Resultado:
-    """`mensajes` es el historial completo; el último debe ser del estudiante."""
-    entrada = construir_mensajes(problema, mensajes)
+def clasificar(problema: dict, mensajes: list[dict], *, seguimiento: bool = False,
+              on_uso=None, cliente=None, ajustes=None) -> Resultado:
+    """`mensajes` es el historial completo; el último debe ser del estudiante.
+
+    `seguimiento`: el turno anterior fue CORRECTA, así que el tutor planteó una
+    pregunta o variación y el mensaje debe evaluarse contra ella.
+    """
+    entrada = construir_mensajes(problema, mensajes, seguimiento=seguimiento)
     datos = completar_json(
         entrada, ESQUEMA, nombre_esquema="clasificacion", temperature=0.0,
         on_uso=on_uso, cliente=cliente, ajustes=ajustes,
@@ -51,12 +56,21 @@ def clasificar(problema: dict, mensajes: list[dict], *, on_uso=None, cliente=Non
         raise ClasificadorError(f"Salida fuera del vocabulario: {datos}") from exc
 
 
-def construir_mensajes(problema: dict, mensajes: list[dict]) -> list[dict]:
+NOTA_SEGUIMIENTO = (
+    "\n\n## FASE DE SEGUIMIENTO\n"
+    "El estudiante ya resolvió el problema original. El último mensaje del tutor "
+    "planteó una pregunta o variación: evalúa el mensaje del estudiante contra ESA "
+    "pregunta, no contra el criterio original. Si la responde bien → CORRECTA; si "
+    "acierta solo una parte → PARCIAL; el resto sigue el orden de decisión."
+)
+
+
+def construir_mensajes(problema: dict, mensajes: list[dict], *, seguimiento: bool = False) -> list[dict]:
     try:
         contexto = construir_contexto(problema, mensajes)
     except ContextoError as exc:
         raise ClasificadorError(str(exc)) from exc
     return [
         {"role": "system", "content": cargar_prompt("classifier")},
-        {"role": "user", "content": contexto},
+        {"role": "user", "content": contexto + (NOTA_SEGUIMIENTO if seguimiento else "")},
     ]

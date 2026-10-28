@@ -3,6 +3,7 @@ lo que permite sustituirlas en las pruebas."""
 from functools import lru_cache
 from pathlib import Path
 
+from app.config import get_settings
 from app.db.logs_repository import LogsRepository
 from app.services.problems import CatalogoProblemas
 from app.services.tutor_service import TutorService
@@ -23,3 +24,7 @@ def get_catalogo() -> CatalogoProblemas:
 @lru_cache
 def get_tutor_service() -> TutorService:
     return TutorService(get_repositorio())
+
+
+def get_max_turnos() -> int:
+    return get_settings().max_turnos_estudiante
