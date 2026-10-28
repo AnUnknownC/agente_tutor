@@ -79,6 +79,7 @@ def main():
     ap.add_argument("--url", default="http://127.0.0.1:8000")
     ap.add_argument("--escenario", choices=ESCENARIOS, default="mixto")
     ap.add_argument("--problema", default="P001")
+    ap.add_argument("--turnos", type=int, default=0, help="Solo los primeros N turnos (0 = todos); ahorra cupo")
     ap.add_argument("--estudiante", default=f"prueba-{int(time.time())}-{secrets.token_hex(2)}")
     args = ap.parse_args()
     base = args.url.rstrip("/")
@@ -91,7 +92,7 @@ def main():
     historial, logs_simulados = [], []
     registrados = tokens = tok_clas = tok_red = tok_cache = 0
 
-    for turno, texto in enumerate(ESCENARIOS[args.escenario], 1):
+    for turno, texto in enumerate(ESCENARIOS[args.escenario][: args.turnos or None], 1):
         historial.append({"role": "user", "content": texto})
         inicio = time.time()
         estado, datos = llamar("POST", f"{base}/chat", {
