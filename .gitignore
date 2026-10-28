@@ -1,6 +1,13 @@
-venv/
-__pycache__/
 *.pyc
-.env
-data/logs.json
 .DS_Store
+.git/
+.env
+.venv/
+python3.13/
+**/__pycache__/
+**/.pytest_cache/
+docs/
+backend/tests/
+backend/listar_modelos.py
+backend/app/data/logs.json
+backend/app/data/logs_originales.json
