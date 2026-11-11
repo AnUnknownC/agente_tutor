@@ -7,6 +7,8 @@ let currentProblem = null;
 let conversationHistory = [];
 let sending = false;
 let limitReached = false;
+let reviewMode = false; // debug: viendo la conversación de otro ID, sin poder enviar
+let reviewTimer = null;
 
 const API_URL = window.ENV_API_URL || '';
 const TIMEOUT_MS = 90000; // el primer acceso a Render puede tardar si el servicio estaba dormido
@@ -39,7 +41,7 @@ function formatear(texto) {
 }
 
 function refreshSend() {
-    $('sendBtn').disabled = !currentProblem || sending || limitReached;
+    $('sendBtn').disabled = !currentProblem || sending || limitReached || reviewMode;
     $('problemSelect').disabled = sending;
 }
 
@@ -64,6 +66,7 @@ async function loadProblems() {
 }
 
 function loadProblem() {
+    reviewMode = false;
     const problemId = $('problemSelect').value;
     currentProblem = problems.find((p) => p.id === problemId) || null;
     conversationHistory = [];
@@ -171,7 +174,7 @@ async function sendMessage() {
         conversationHistory.push({ role: 'assistant', content: data.response });
         appendMessage('agent', data.response, meta);
         updateProfile(data.profile);
-        $('studentId').disabled = true; // el ID no cambia a mitad de la sesión
+        if (!DEBUG) $('studentId').disabled = true; // el ID no cambia a mitad de la sesión
 
     } catch (err) {
         console.error(err);
@@ -190,12 +193,12 @@ function bloquearSesion() {
     limitReached = true;
     $('messageInput').disabled = true;
     $('messageInput').placeholder = 'Has completado la sesión.';
-    $('studentId').disabled = true;
+    if (!DEBUG) $('studentId').disabled = true;
 }
 
 // ---------- pintado ----------
 
-function appendMessage(role, text, metadata = null) {
+function appendMessage(role, text, metadata = null, fecha = null) {
     const container = $('chatMessages');
     container.querySelector('.welcome-message')?.remove();
 
@@ -221,7 +224,7 @@ function appendMessage(role, text, metadata = null) {
     div.innerHTML = `
         <div class="message-bubble">${formatear(text)}</div>
         ${metaHTML}
-        <div class="message-meta">${role === 'user' ? 'Tú' : 'Agente Tutor'} · ${new Date().toLocaleTimeString()}</div>
+        <div class="message-meta">${role === 'user' ? 'Tú' : 'Agente Tutor'} · ${fecha ? new Date(fecha).toLocaleString() : new Date().toLocaleTimeString()}</div>
     `;
 
     container.appendChild(div);
@@ -262,7 +265,113 @@ $('messageInput').addEventListener('input', function () {
     this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
+
+// ---------- revisión (solo ?debug=1) ----------
+
+async function adminFetch(ruta) {
+    const token = $('adminToken').value.trim();
+    if (!token) throw new Error('Escribe el token de administrador.');
+    const res = await fetchConTiempo(`${API_URL}${ruta}`, { headers: { 'X-Admin-Token': token } });
+    if (res.status === 401) throw new Error('Token inválido.');
+    if (res.status === 404) throw new Error('El panel de revisión no está activado en el servidor.');
+    if (!res.ok) throw new Error(`Error del servidor (${res.status}).`);
+    try { sessionStorage.setItem('adminToken', token); } catch (_) { /* sin almacenamiento */ }
+    return res.json();
+}
+
+async function loadStudentIds() {
+    const info = $('adminInfo');
+    info.textContent = 'Cargando…';
+    try {
+        const lista = await adminFetch('/admin/students');
+        const datalist = $('studentList');
+        datalist.innerHTML = '';
+        lista.forEach((e) => {
+            const opt = document.createElement('option');
+            opt.value = e.student_id;
+            opt.label = `${e.turnos} turno${e.turnos === 1 ? '' : 's'}`;
+            datalist.appendChild(opt);
+        });
+        info.textContent = `${lista.length} ID${lista.length === 1 ? '' : 's'} registrados. Haz clic en el campo de ID para elegir uno.`;
+    } catch (err) {
+        info.textContent = err.message;
+    }
+}
+
+async function reviewStudent(id) {
+    const info = $('adminInfo');
+    try {
+        const logs = await adminFetch(`/admin/students/${encodeURIComponent(id)}/conversation`);
+        if ($('studentId').value.trim() !== id) return; // el campo cambió mientras cargaba
+
+        reviewMode = true;
+        $('chatMessages').innerHTML = '';
+        if (!logs.length) {
+            appendNote(`El ID ${id} no tiene conversaciones registradas.`);
+        } else {
+            appendNote(`Revisión de ${id} · ${logs.length} turno${logs.length === 1 ? '' : 's'} · solo lectura`);
+            let problema = null;
+            logs.forEach((log) => {
+                if (log.problem_id !== problema) {
+                    problema = log.problem_id;
+                    appendNote(`Problema ${problema}`);
+                }
+                appendMessage('user', log.student_message, null, log.timestamp);
+                appendMessage('agent', log.agent_response, {
+                    clasificacion: log.clasificacion,
+                    nivel_intervencion: log.nivel_intervencion,
+                    nivel_bloom: log.nivel_bloom,
+                }, log.timestamp);
+            });
+        }
+        $('chatMessages').scrollTop = 0;
+        info.textContent = `Mostrando la conversación de ${id}.`;
+        refreshSend();
+    } catch (err) {
+        info.textContent = err.message;
+    }
+}
+
+function exitReview() {
+    reviewMode = false;
+    conversationHistory = [];
+    if (currentProblem) {
+        const actual = currentProblem;
+        $('chatMessages').innerHTML = `
+            <div class="welcome-message">
+                <h2>${escapeHtml(actual.titulo)}</h2>
+                <p>${escapeHtml(actual.enunciado)}</p>
+            </div>
+        `;
+    } else {
+        $('chatMessages').innerHTML = `
+            <div class="welcome-message">
+                <h2>Bienvenido al Agente Tutor</h2>
+                <p>Selecciona un problema en el panel izquierdo<br>y escribe tu respuesta para comenzar.</p>
+            </div>
+        `;
+    }
+    $('adminInfo').textContent = '';
+    refreshSend();
+}
+
+if (DEBUG) {
+    // Al elegir (o escribir) un ID registrado se muestra su conversación.
+    $('studentId').addEventListener('input', (e) => {
+        clearTimeout(reviewTimer);
+        const id = e.target.value.trim();
+        const registrado = [...$('studentList').options].some((o) => o.value === id);
+        if (registrado && !sending) reviewTimer = setTimeout(() => reviewStudent(id), 250);
+    });
+    try {
+        const guardado = sessionStorage.getItem('adminToken');
+        if (guardado) { $('adminToken').value = guardado; loadStudentIds(); }
+    } catch (_) { /* sin almacenamiento */ }
+}
+
 loadProblems();
+window.loadStudentIds = loadStudentIds;
+window.exitReview = exitReview;
 window.loadProblem = loadProblem;
 window.sendMessage = sendMessage;
 window.handleKeyDown = handleKeyDown;

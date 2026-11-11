@@ -67,3 +67,28 @@ class LogsRepository:
             logger.exception("Error obteniendo logs")
             raise LogsRepositoryError("No se pudieron obtener los logs") from exc
         return respuesta.data or []
+
+    def listar_estudiantes(self) -> list[dict]:
+        """Estudiantes con logs: id, número de turnos y última interacción (más reciente primero)."""
+        filas, pagina, desde = [], 1000, 0
+        try:
+            while True:
+                respuesta = (
+                    self._client.table(TABLA).select("student_id,timestamp").order("timestamp")
+                    .range(desde, desde + pagina - 1).execute()
+                )
+                datos = respuesta.data or []
+                filas.extend(datos)
+                if len(datos) < pagina:
+                    break
+                desde += pagina
+        except Exception as exc:
+            logger.exception("Error listando estudiantes")
+            raise LogsRepositoryError("No se pudo listar los estudiantes") from exc
+
+        agregado: dict[str, dict] = {}
+        for fila in filas:
+            e = agregado.setdefault(fila["student_id"], {"student_id": fila["student_id"], "turnos": 0, "ultima_interaccion": None})
+            e["turnos"] += 1
+            e["ultima_interaccion"] = fila.get("timestamp") or e["ultima_interaccion"]
+        return sorted(agregado.values(), key=lambda e: e["ultima_interaccion"] or "", reverse=True)

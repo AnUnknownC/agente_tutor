@@ -314,3 +314,48 @@
         .profile-panel, .metadata-badge { display: none; }
         body.debug .profile-panel { display: block; }
         body.debug .metadata-badge { display: inline-block; }
+
+        /* Panel de revisión (solo ?debug=1) */
+        .debug-only { display: none; }
+        body.debug .debug-only { display: block; }
+
+        .admin-box {
+            margin-top: 16px;
+            padding: 12px;
+            border: 1px dashed #b9b3e6;
+            border-radius: 8px;
+            background: #faf9ff;
+        }
+
+        .admin-box label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-box input {
+            width: 100%;
+            margin-top: 6px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .admin-actions { display: flex; gap: 6px; margin-top: 8px; }
+
+        .admin-actions button {
+            flex: 1;
+            padding: 6px 8px;
+            font-size: 12px;
+            border: 1px solid #3C3489;
+            background: white;
+            color: #3C3489;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .admin-actions button:hover { background: #EEEDFE; }
+        .admin-box small { display: block; margin-top: 8px; font-size: 12px; color: #666; }

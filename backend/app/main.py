@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api import routes_chat, routes_problems, routes_profile
+from app.api import routes_admin, routes_chat, routes_problems, routes_profile
 from app.config import get_settings
 from app.db.logs_repository import LogsRepositoryError
 
@@ -29,6 +29,7 @@ def create_app() -> FastAPI:
     app.include_router(routes_chat.router)
     app.include_router(routes_problems.router)
     app.include_router(routes_profile.router)
+    app.include_router(routes_admin.router)
 
     @app.exception_handler(LogsRepositoryError)
     async def logs_no_disponibles(_: Request, __: LogsRepositoryError):

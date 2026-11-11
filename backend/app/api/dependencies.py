@@ -1,7 +1,10 @@
 """Construcción de las piezas compartidas. Las rutas las piden con Depends,
 lo que permite sustituirlas en las pruebas."""
+import secrets
 from functools import lru_cache
 from pathlib import Path
+
+from fastapi import Depends, Header, HTTPException
 
 from app.config import get_settings
 from app.db.logs_repository import LogsRepository
@@ -28,3 +31,15 @@ def get_tutor_service() -> TutorService:
 
 def get_max_turnos() -> int:
     return get_settings().max_turnos_estudiante
+
+
+def get_admin_token() -> str:
+    return get_settings().admin_token
+
+
+def requerir_admin(x_admin_token: str | None = Header(default=None), token: str = Depends(get_admin_token)):
+    """Protege las rutas de revisión. Sin ADMIN_TOKEN configurado, no existen."""
+    if not token:
+        raise HTTPException(status_code=404, detail="No encontrado")
+    if not x_admin_token or not secrets.compare_digest(x_admin_token.encode(), token.encode()):
+        raise HTTPException(status_code=401, detail="Token inválido")

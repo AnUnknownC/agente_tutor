@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     # Experimento: turnos máximos por estudiante (0 = sin límite)
     max_turnos_estudiante: int = 8
 
+    # Panel de revisión (modo debug del frontend). Vacío = desactivado.
+    admin_token: str = ""
+
     # API
     cors_origins: str = "*"  # lista separada por comas
 

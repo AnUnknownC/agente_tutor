@@ -19,7 +19,18 @@
     <div class="problem-panel">
         <div class="student-input">
             <label>ID del Estudiante</label>
-            <input type="text" id="studentId" placeholder="Escribe tu ID de estudiante" maxlength="100" autocomplete="off">
+            <input type="text" id="studentId" placeholder="Escribe tu ID de estudiante" maxlength="100" autocomplete="off" list="studentList">
+            <datalist id="studentList"></datalist>
+        </div>
+
+        <div class="admin-box debug-only">
+            <label>Token de administrador</label>
+            <input type="password" id="adminToken" placeholder="Token" autocomplete="off">
+            <div class="admin-actions">
+                <button type="button" onclick="loadStudentIds()">Cargar IDs</button>
+                <button type="button" onclick="exitReview()">Salir de revisión</button>
+            </div>
+            <small id="adminInfo"></small>
         </div>
 
         <div class="problem-selector" style="margin-top: 16px;">
